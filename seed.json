@@ -1,0 +1,92 @@
+[
+  {
+    "id": "txn_001",
+    "description": "Lunch at cafeteria",
+    "amount": 12.50,
+    "category": "Food",
+    "date": "2026-09-25",
+    "createdAt": "2026-09-25T12:00:00.000Z",
+    "updatedAt": "2026-09-25T12:00:00.000Z"
+  },
+  {
+    "id": "txn_002",
+    "description": "Chemistry textbook",
+    "amount": 89.99,
+    "category": "Books",
+    "date": "2026-09-23",
+    "createdAt": "2026-09-23T10:00:00.000Z",
+    "updatedAt": "2026-09-23T10:00:00.000Z"
+  },
+  {
+    "id": "txn_003",
+    "description": "Bus pass monthly refill",
+    "amount": 45.00,
+    "category": "Transport",
+    "date": "2026-09-20",
+    "createdAt": "2026-09-20T08:30:00.000Z",
+    "updatedAt": "2026-09-20T08:30:00.000Z"
+  },
+  {
+    "id": "txn_004",
+    "description": "Coffee with friends",
+    "amount": 8.75,
+    "category": "Entertainment",
+    "date": "2026-09-28",
+    "createdAt": "2026-09-28T15:45:00.000Z",
+    "updatedAt": "2026-09-28T15:45:00.000Z"
+  },
+  {
+    "id": "txn_005",
+    "description": "Lab coat and goggles",
+    "amount": 34.20,
+    "category": "Fees",
+    "date": "2026-10-01",
+    "createdAt": "2026-10-01T09:15:00.000Z",
+    "updatedAt": "2026-10-01T09:15:00.000Z"
+  },
+  {
+    "id": "txn_006",
+    "description": "Library printing paper",
+    "amount": 4.50,
+    "category": "Books",
+    "date": "2026-10-02",
+    "createdAt": "2026-10-02T11:00:00.000Z",
+    "updatedAt": "2026-10-02T11:00:00.000Z"
+  },
+  {
+    "id": "txn_007",
+    "description": "Student union subscription",
+    "amount": 15.00,
+    "category": "Fees",
+    "date": "2026-10-03",
+    "createdAt": "2026-10-03T14:20:00.000Z",
+    "updatedAt": "2026-10-03T14:20:00.000Z"
+  },
+  {
+    "id": "txn_008",
+    "description": "Late night pizza",
+    "amount": 22.10,
+    "category": "Food",
+    "date": "2026-10-04",
+    "createdAt": "2026-10-04T23:10:00.000Z",
+    "updatedAt": "2026-10-04T23:10:00.000Z"
+  },
+  {
+    "id": "txn_009",
+    "description": "Notebook pack pens",
+    "amount": 11.80,
+    "category": "Books",
+    "date": "2026-10-05",
+    "createdAt": "2026-10-05T16:00:00.000Z",
+    "updatedAt": "2026-10-05T16:00:00.000Z"
+  },
+  {
+    "id": "txn_010",
+    "description": "Gym membership",
+    "amount": 30.00,
+    "category": "Other",
+    "date": "2026-10-06",
+    "createdAt": "2026-10-06T07:45:00.000Z",
+    "updatedAt": "2026-10-06T07:45:00.000Z"
+  }
+]
