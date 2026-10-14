@@ -98,21 +98,28 @@
       <h2 id="settings-heading">Settings & Data Management</h2>
       
       <div class="settings-control">
-        <label for="monthly-cap-input">Monthly Budget Cap:</label>
-        <input type="number" id="monthly-cap-input" value="500" min="0" step="10" />
+        <label for="monthly-cap-input">Monthly Budget Cap (Base Currency):</label>
+        <input type="number" id="monthly-cap-input" min="0" step="10" />
       </div>
 
       <div class="settings-control">
-        <label for="currency-select">Currency:</label>
+        <label for="currency-select">Display Currency:</label>
         <select id="currency-select">
-          <option value="USD">USD ($)</option>
+          <option value="USD">USD ($ - Base)</option>
           <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
           <option value="KES">KES (KSh)</option>
         </select>
       </div>
 
-      <div class="settings-actions">
+      <div class="settings-control">
+        <label>Manual Exchange Rates (relative to USD):</label>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <label>EUR: <input type="number" id="rate-eur" step="0.01" style="width: 80px;" /></label>
+          <label>KES: <input type="number" id="rate-kes" step="0.1" style="width: 80px;" /></label>
+        </div>
+      </div>
+
+      <div class="settings-actions" style="margin-top: 1rem;">
         <button id="export-json">Export JSON</button>
         <input type="file" id="import-json-file" accept=".json" style="display:none" />
         <button id="trigger-import">Import JSON</button>

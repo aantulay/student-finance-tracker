@@ -6,6 +6,7 @@ export class AppState {
     const settings = loadSettings();
     this.monthlyCap = settings.monthlyCap;
     this.currency = settings.currency;
+    this.rates = settings.rates || { USD: 1.0, EUR: 0.92, KES: 130.0 };
     this.searchQuery = '';
     this.sortBy = 'date';
   }
@@ -32,12 +33,33 @@ export class AppState {
 
   setMonthlyCap(cap) {
     this.monthlyCap = cap;
-    saveSettings({ monthlyCap: this.monthlyCap, currency: this.currency });
+    this.persistSettings();
   }
 
   setCurrency(curr) {
     this.currency = curr;
-    saveSettings({ monthlyCap: this.monthlyCap, currency: this.currency });
+    this.persistSettings();
+  }
+
+  setRate(currencyCode, rate) {
+    this.rates[currencyCode] = rate;
+    this.persistSettings();
+  }
+
+  persistSettings() {
+    saveSettings({
+      monthlyCap: this.monthlyCap,
+      currency: this.currency,
+      rates: this.rates
+    });
+  }
+
+  // Convert any base amount to the currently selected display currency
+  formatAmount(amount) {
+    const num = parseFloat(amount) || 0;
+    const rate = this.rates[this.currency] || 1.0;
+    const converted = num * rate;
+    return `${this.currency} ${converted.toFixed(2)}`;
   }
 
   getFilteredAndSortedRecords(compileRegex) {

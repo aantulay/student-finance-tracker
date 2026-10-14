@@ -16,8 +16,11 @@ async function init() {
     }
   }
 
+  // Populate settings form inputs
   document.getElementById('monthly-cap-input').value = state.monthlyCap;
   document.getElementById('currency-select').value = state.currency;
+  document.getElementById('rate-eur').value = state.rates.EUR;
+  document.getElementById('rate-kes').value = state.rates.KES;
 
   refresh();
 }
@@ -72,6 +75,22 @@ document.getElementById('currency-select').addEventListener('change', (e) => {
   refresh();
 });
 
+document.getElementById('rate-eur').addEventListener('input', (e) => {
+  const val = parseFloat(e.target.value);
+  if (!isNaN(val)) {
+    state.setRate('EUR', val);
+    refresh();
+  }
+});
+
+document.getElementById('rate-kes').addEventListener('input', (e) => {
+  const val = parseFloat(e.target.value);
+  if (!isNaN(val)) {
+    state.setRate('KES', val);
+    refresh();
+  }
+});
+
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('btn-delete')) {
     const id = e.target.dataset.id;
@@ -82,7 +101,11 @@ document.addEventListener('click', (e) => {
 
 document.getElementById('export-json').addEventListener('click', () => {
   const dataToExport = {
-    settings: { monthlyCap: state.monthlyCap, currency: state.currency },
+    settings: { 
+      monthlyCap: state.monthlyCap, 
+      currency: state.currency,
+      rates: state.rates
+    },
     records: state.records
   };
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
@@ -105,13 +128,19 @@ document.getElementById('import-json-file').addEventListener('change', (e) => {
   reader.onload = (event) => {
     try {
       const importedData = validateAndImportJSON(event.target.result);
-      const recordsList = Array.isArray(importedData) ? importedData : importedData.records;
+      const recordsList = importedData.records;
       
       if (importedData.settings) {
         if (importedData.settings.monthlyCap) state.setMonthlyCap(importedData.settings.monthlyCap);
         if (importedData.settings.currency) state.setCurrency(importedData.settings.currency);
+        if (importedData.settings.rates) {
+          state.rates = importedData.settings.rates;
+          state.persistSettings();
+        }
         document.getElementById('monthly-cap-input').value = state.monthlyCap;
         document.getElementById('currency-select').value = state.currency;
+        document.getElementById('rate-eur').value = state.rates.EUR;
+        document.getElementById('rate-kes').value = state.rates.KES;
       }
       
       state.setRecords(recordsList || []);

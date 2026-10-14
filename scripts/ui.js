@@ -2,18 +2,22 @@ import { compileRegex } from './search.js';
 
 export function renderDashboard(state) {
   const stats = state.getDashboardStats();
+  const currentRate = state.rates[state.currency] || 1.0;
 
   document.getElementById('stat-total-records').textContent = stats.totalRecords;
-  document.getElementById('stat-total-sum').textContent = `${state.currency} ${stats.totalSpent.toFixed(2)}`;
+  document.getElementById('stat-total-sum').textContent = state.formatAmount(stats.totalSpent);
   document.getElementById('stat-top-category').textContent = stats.topCategory;
-  document.getElementById('stat-7day-sum').textContent = `${state.currency} ${stats.last7DaysSum.toFixed(2)}`;
+  document.getElementById('stat-7day-sum').textContent = state.formatAmount(stats.last7DaysSum);
+
+  const convertedCap = state.monthlyCap * currentRate;
+  const convertedSpent = stats.totalSpent * currentRate;
 
   const capStatusDiv = document.getElementById('aria-cap-status');
-  if (stats.totalSpent > state.monthlyCap) {
-    capStatusDiv.textContent = `Warning: You have exceeded your monthly cap of ${state.currency} ${state.monthlyCap}!`;
+  if (convertedSpent > convertedCap) {
+    capStatusDiv.textContent = `Warning: You have exceeded your monthly cap of ${state.currency} ${convertedCap.toFixed(2)}!`;
     capStatusDiv.style.color = 'red';
   } else {
-    const remaining = state.monthlyCap - stats.totalSpent;
+    const remaining = convertedCap - convertedSpent;
     capStatusDiv.textContent = `Budget remaining: ${state.currency} ${remaining.toFixed(2)}`;
     capStatusDiv.style.color = 'green';
   }
@@ -39,7 +43,7 @@ export function renderRecords(state) {
       <td>${r.date}</td>
       <td>${r.description}</td>
       <td>${r.category}</td>
-      <td>${state.currency} ${parseFloat(r.amount).toFixed(2)}</td>
+      <td>${state.formatAmount(r.amount)}</td>
       <td><button class="btn-delete" data-id="${r.id}">Delete</button></td>
     `;
     tbody.appendChild(tr);
@@ -50,7 +54,7 @@ export function renderRecords(state) {
       <p><strong>Date:</strong> ${r.date}</p>
       <p><strong>Description:</strong> ${r.description}</p>
       <p><strong>Category:</strong> ${r.category}</p>
-      <p><strong>Amount:</strong> ${state.currency} ${parseFloat(r.amount).toFixed(2)}</p>
+      <p><strong>Amount:</strong> ${state.formatAmount(r.amount)}</p>
       <button class="btn-delete" data-id="${r.id}">Delete</button>
     `;
     cardsContainer.appendChild(card);
