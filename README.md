@@ -46,40 +46,31 @@ student-finance-tracker/
     └── tests.js          # Assertion logic for the test runner suite
 
 
-## Getting started
+---
+
+## Getting Started
+
 Follow these steps to set up and run the application locally:
 
-Clone or Download: Download or clone this repository to your local machine.
+1. **Clone or Download**: Download or clone this repository to your local machine.
+2. **Open the Application**: 
+   * Open `index.html` directly in any modern web browser.
+   * Alternatively, run the project using a local development server such as the Live Server extension in VS Code to ensure smooth ES6 module loading.
+3. **Run Unit Tests**: 
+   * Open `tests.html` in your browser to view automated assertion results verifying the validation rules and regex logic.
 
-Open the Application:
-
-Open index.html directly in any modern web browser.
-
-Alternatively, run the project using a local development server such as the Live Server extension in VS Code to ensure smooth ES6 module loading.
-
-Run Unit Tests:
-
-Open tests.html in your browser to view automated assertion results verifying the validation rules and regex logic.
+---
 
 ## Usage Guide
-Adding Transactions:
 
-Navigate to the Add Transaction form section.
-
-Enter a valid description, monetary amount, date, and category. Click submit to record the entry. Validation errors appear inline if input requirements are not met.
-
-Managing Settings and Currencies:
-
-Go to the Settings section to update your monthly budget cap or switch your display currency (USD, EUR, or KES).
-
-Modify the manual exchange rate input fields relative to the base currency[cite: 1] to see totals, table entries, and budget warnings scale and update instantly.
-
-Searching Records:
-
-Type search terms or regular expression patterns into the live search input bar to filter your transaction list dynamically on the fly.
-
-Data Management:
-
-Click Export JSON to download a comprehensive backup file containing your current records, settings, and manual exchange rates.
-
-Click Import JSON to upload and validate a backup file from your device, ensuring data integrity through built-in schema checks.
+* **Adding Transactions**: 
+  * Navigate to the Add Transaction form section.
+  * Enter a valid description, monetary amount, date, and category. Click submit to record the entry. Validation errors appear inline if input requirements are not met.
+* **Managing Settings and Currencies**: 
+  * Go to the Settings section to update your monthly budget cap or switch your display currency (USD, EUR, or KES).
+  * Modify the manual exchange rate input fields relative to the base currency to see totals, table entries, and budget warnings scale and update instantly.
+* **Searching Records**: 
+  * Type search terms or regular expression patterns into the live search input bar to filter your transaction list dynamically on the fly.
+* **Data Management**: 
+  * Click **Export JSON** to download a comprehensive backup file containing your current records, settings, and manual exchange rates.
+  * Click **Import JSON** to upload and validate a backup file from your device, ensuring data integrity through built-in schema checks.
