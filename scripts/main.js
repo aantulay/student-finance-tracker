@@ -5,6 +5,14 @@ import { renderDashboard, renderRecords } from './ui.js';
 
 const state = new AppState();
 
+function updateSettingsInputs() {
+  const currentRate = state.rates[state.currency] || 1.0;
+  document.getElementById('monthly-cap-input').value = (state.monthlyCap * currentRate).toFixed(2);
+  document.getElementById('currency-select').value = state.currency;
+  document.getElementById('rate-eur').value = state.rates.EUR;
+  document.getElementById('rate-kes').value = state.rates.KES;
+}
+
 async function init() {
   if (state.records.length === 0) {
     try {
@@ -16,12 +24,7 @@ async function init() {
     }
   }
 
-  // Populate settings form inputs
-  document.getElementById('monthly-cap-input').value = state.monthlyCap;
-  document.getElementById('currency-select').value = state.currency;
-  document.getElementById('rate-eur').value = state.rates.EUR;
-  document.getElementById('rate-kes').value = state.rates.KES;
-
+  updateSettingsInputs();
   refresh();
 }
 
@@ -63,15 +66,18 @@ document.getElementById('transaction-form').addEventListener('submit', (e) => {
 });
 
 document.getElementById('monthly-cap-input').addEventListener('input', (e) => {
-  const newCap = parseFloat(e.target.value);
-  if (!isNaN(newCap)) {
-    state.setMonthlyCap(newCap);
-    refresh();
+  const inputVal = parseFloat(e.target.value);
+  if (!isNaN(inputVal)) {
+    const currentRate = state.rates[state.currency] || 1.0;
+    const baseCap = inputVal / currentRate;
+    state.setMonthlyCap(baseCap);
+    renderDashboard(state);
   }
 });
 
 document.getElementById('currency-select').addEventListener('change', (e) => {
   state.setCurrency(e.target.value);
+  updateSettingsInputs();
   refresh();
 });
 
@@ -79,6 +85,7 @@ document.getElementById('rate-eur').addEventListener('input', (e) => {
   const val = parseFloat(e.target.value);
   if (!isNaN(val)) {
     state.setRate('EUR', val);
+    updateSettingsInputs();
     refresh();
   }
 });
@@ -87,6 +94,7 @@ document.getElementById('rate-kes').addEventListener('input', (e) => {
   const val = parseFloat(e.target.value);
   if (!isNaN(val)) {
     state.setRate('KES', val);
+    updateSettingsInputs();
     refresh();
   }
 });
@@ -137,10 +145,7 @@ document.getElementById('import-json-file').addEventListener('change', (e) => {
           state.rates = importedData.settings.rates;
           state.persistSettings();
         }
-        document.getElementById('monthly-cap-input').value = state.monthlyCap;
-        document.getElementById('currency-select').value = state.currency;
-        document.getElementById('rate-eur').value = state.rates.EUR;
-        document.getElementById('rate-kes').value = state.rates.KES;
+        updateSettingsInputs();
       }
       
       state.setRecords(recordsList || []);
