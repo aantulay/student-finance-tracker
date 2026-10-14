@@ -1,4 +1,4 @@
-import { compileRegex } from './search.js';
+import { compileRegex, highlight } from './search.js';
 
 export function renderDashboard(state) {
   const stats = state.getDashboardStats();
@@ -23,6 +23,18 @@ export function renderDashboard(state) {
   }
 }
 
+function highlightText(text, regex) {
+  if (!regex || !text) return text;
+  const stringText = String(text);
+  try{
+    const flags = regex.flags.includes('g') ? regex.flags : regex.flags + 'g';
+    const globalRegex = new RegExp(regex.source, flags);
+    return stringText.replace(globalRegex, match => `<mark>${match}</mark>`);
+  } catch (e) {
+    return stringText;
+  }
+}
+
 export function renderRecords(state) {
   const records = state.getFilteredAndSortedRecords(compileRegex);
   const tbody = document.getElementById('records-table-body');
@@ -38,12 +50,18 @@ export function renderRecords(state) {
   }
 
   records.forEach(r => {
+    const formattedAmount = state.formatAmount(r.amount);
+    const highlightedDate = highlightText(r.date, regex);
+    const highlightedDesc = highlightText(r.description, regex);
+    const highlightedCat = highlightText(r.category, regex);
+    const highlightedAmount = highlightText(formattedAmount, regex);
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${r.date}</td>
-      <td>${r.description}</td>
-      <td>${r.category}</td>
-      <td>${state.formatAmount(r.amount)}</td>
+      <td>${highlightedDate}</td>
+      <td>${highlightedDesc}</td>
+      <td>${highlightedCat}</td>
+      <td>${highlightedAmount}</td>
       <td><button class="btn-delete" data-id="${r.id}">Delete</button></td>
     `;
     tbody.appendChild(tr);
@@ -51,10 +69,10 @@ export function renderRecords(state) {
     const card = document.createElement('div');
     card.className = 'record-card';
     card.innerHTML = `
-      <p><strong>Date:</strong> ${r.date}</p>
-      <p><strong>Description:</strong> ${r.description}</p>
-      <p><strong>Category:</strong> ${r.category}</p>
-      <p><strong>Amount:</strong> ${state.formatAmount(r.amount)}</p>
+      <p><strong>Date:</strong> ${highlightedDate}</p>
+      <p><strong>Description:</strong> ${highlightedDesc}</p>
+      <p><strong>Category:</strong> ${highlightedCat}</p>
+      <p><strong>Amount:</strong> ${highlightedAmount}</p>
       <button class="btn-delete" data-id="${r.id}">Delete</button>
     `;
     cardsContainer.appendChild(card);
