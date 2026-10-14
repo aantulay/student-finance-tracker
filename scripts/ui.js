@@ -1,74 +1,58 @@
-import { compileRegex, highlight } from './search.js';
+import { compileRegex } from './search.js';
 
 export function renderDashboard(state) {
-  const stats = state.getStats();
-  const cap = state.settings.monthlyCap;
-  const currency = state.settings.baseCurrency;
+  const stats = state.getDashboardStats();
 
   document.getElementById('stat-total-records').textContent = stats.totalRecords;
-  document.getElementById('stat-total-sum').textContent = `${currency} ${stats.totalSum.toFixed(2)}`;
+  document.getElementById('stat-total-sum').textContent = `${state.currency} ${stats.totalSpent.toFixed(2)}`;
   document.getElementById('stat-top-category').textContent = stats.topCategory;
-  document.getElementById('stat-7day-sum').textContent = `${currency} ${stats.last7DaysSum.toFixed(2)}`;
+  document.getElementById('stat-7day-sum').textContent = `${state.currency} ${stats.last7DaysSum.toFixed(2)}`;
 
-  const capLiveRegion = document.getElementById('aria-cap-status');
-  const remaining = cap - stats.totalSum;
-
-  if (stats.totalSum > cap) {
-    capLiveRegion.setAttribute('aria-live', 'assertive');
-    capLiveRegion.className = 'status-alert overage';
-    capLiveRegion.textContent = `Budget Alert: Exceeded budget cap by ${currency} ${Math.abs(remaining).toFixed(2)}`;
+  const capStatusDiv = document.getElementById('aria-cap-status');
+  if (stats.totalSpent > state.monthlyCap) {
+    capStatusDiv.textContent = `Warning: You have exceeded your monthly cap of ${state.currency} ${state.monthlyCap}!`;
+    capStatusDiv.style.color = 'red';
   } else {
-    capLiveRegion.setAttribute('aria-live', 'polite');
-    capLiveRegion.className = 'status-alert under';
-    capLiveRegion.textContent = `Budget Status: ${currency} ${remaining.toFixed(2)} remaining under monthly cap.`;
+    const remaining = state.monthlyCap - stats.totalSpent;
+    capStatusDiv.textContent = `Budget remaining: ${state.currency} ${remaining.toFixed(2)}`;
+    capStatusDiv.style.color = 'green';
   }
 }
 
 export function renderRecords(state) {
-  const tableBody = document.getElementById('records-table-body');
-  const cardContainer = document.getElementById('records-cards');
-  const searchRegex = compileRegex(state.searchQuery, 'i');
-  const records = state.getFilteredAndSortedRecords();
+  const records = state.getFilteredAndSortedRecords(compileRegex);
+  const tbody = document.getElementById('records-table-body');
+  const cardsContainer = document.getElementById('records-cards');
 
-  tableBody.innerHTML = '';
-  cardContainer.innerHTML = '';
+  tbody.innerHTML = '';
+  cardsContainer.innerHTML = '';
 
-  records.forEach(record => {
-    const isMatched = searchRegex ? searchRegex.test(`${record.description} ${record.category}`) : true;
-    if (searchRegex && !isMatched) return;
+  if (records.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No records found.</td></tr>`;
+    cardsContainer.innerHTML = `<p style="text-align: center;">No records found.</p>`;
+    return;
+  }
 
-    const descHl = highlight(record.description, searchRegex);
-    const catHl = highlight(record.category, searchRegex);
-
+  records.forEach(r => {
     const tr = document.createElement('tr');
-    tr.dataset.id = record.id;
     tr.innerHTML = `
-      <td>${record.date}</td>
-      <td class="cell-desc">${descHl}</td>
-      <td class="cell-cat">${catHl}</td>
-      <td>${state.settings.baseCurrency} ${Number(record.amount).toFixed(2)}</td>
-      <td>
-        <button class="btn-delete" data-id="${record.id}" aria-label="Delete record ${record.description}">Delete</button>
-      </td>
+      <td>${r.date}</td>
+      <td>${r.description}</td>
+      <td>${r.category}</td>
+      <td>${state.currency} ${parseFloat(r.amount).toFixed(2)}</td>
+      <td><button class="btn-delete" data-id="${r.id}">Delete</button></td>
     `;
-    tableBody.appendChild(tr);
+    tbody.appendChild(tr);
 
     const card = document.createElement('div');
     card.className = 'record-card';
-    card.dataset.id = record.id;
     card.innerHTML = `
-      <div class="card-header">
-        <strong>${descHl}</strong>
-        <span>${state.settings.baseCurrency} ${Number(record.amount).toFixed(2)}</span>
-      </div>
-      <div class="card-body">
-        <p>Category: ${catHl}</p>
-        <p>Date: ${record.date}</p>
-      </div>
-      <div class="card-actions">
-        <button class="btn-delete" data-id="${record.id}" aria-label="Delete record ${record.description}">Delete</button>
-      </div>
+      <p><strong>Date:</strong> ${r.date}</p>
+      <p><strong>Description:</strong> ${r.description}</p>
+      <p><strong>Category:</strong> ${r.category}</p>
+      <p><strong>Amount:</strong> ${state.currency} ${parseFloat(r.amount).toFixed(2)}</p>
+      <button class="btn-delete" data-id="${r.id}">Delete</button>
     `;
-    cardContainer.appendChild(card);
+    cardsContainer.appendChild(card);
   });
 }

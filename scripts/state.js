@@ -2,37 +2,27 @@ import { loadRecords, saveRecords, loadSettings, saveSettings } from './storage.
 
 export class AppState {
   constructor() {
-    this.records = loadRecords() || [];
-    this.settings = loadSettings();
+    this.records = loadRecords();
+    const settings = loadSettings();
+    this.monthlyCap = settings.monthlyCap;
+    this.currency = settings.currency;
     this.searchQuery = '';
-    this.selectedCategory = 'All';
     this.sortBy = 'date';
-    this.sortOrder = 'desc';
+  }
+
+  setRecords(newRecords) {
+    this.records = newRecords;
+    saveRecords(this.records);
   }
 
   addRecord(record) {
-    const timestamp = new Date().toISOString();
     const newRecord = {
+      id: 'rec_' + Date.now(),
       ...record,
-      id: `txn_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-      createdAt: timestamp,
-      updatedAt: timestamp
+      createdAt: new Date().toISOString()
     };
     this.records.push(newRecord);
     saveRecords(this.records);
-    return newRecord;
-  }
-
-  updateRecord(id, updatedFields) {
-    const index = this.records.findIndex(r => r.id === id);
-    if (index !== -1) {
-      this.records[index] = {
-        ...this.records[index],
-        ...updatedFields,
-        updatedAt: new Date().toISOString()
-      };
-      saveRecords(this.records);
-    }
   }
 
   deleteRecord(id) {
@@ -40,67 +30,77 @@ export class AppState {
     saveRecords(this.records);
   }
 
-  setRecords(records) {
-    this.records = records;
-    saveRecords(this.records);
+  setMonthlyCap(cap) {
+    this.monthlyCap = cap;
+    saveSettings({ monthlyCap: this.monthlyCap, currency: this.currency });
   }
 
-  updateSettings(newSettings) {
-    this.settings = { ...this.settings, ...newSettings };
-    saveSettings(this.settings);
+  setCurrency(curr) {
+    this.currency = curr;
+    saveSettings({ monthlyCap: this.monthlyCap, currency: this.currency });
   }
 
-  getFilteredAndSortedRecords() {
+  getFilteredAndSortedRecords(compileRegex) {
     let result = [...this.records];
 
-    if (this.selectedCategory !== 'All') {
-      result = result.filter(r => r.category === this.selectedCategory);
+    if (this.searchQuery.trim() !== '') {
+      const regex = compileRegex(this.searchQuery);
+      if (regex) {
+        result = result.filter(r => 
+          regex.test(r.description) || 
+          regex.test(r.category) || 
+          regex.test(r.amount) || 
+          regex.test(r.date)
+        );
+      }
     }
 
     result.sort((a, b) => {
-      let valA = a[this.sortBy];
-      let valB = b[this.sortBy];
-
-      if (this.sortBy === 'amount') {
-        valA = Number(valA);
-        valB = Number(valB);
-      } else {
-        valA = String(valA).toLowerCase();
-        valB = String(valB).toLowerCase();
+      if (this.sortBy === 'date') {
+        return new Date(b.date) - new Date(a.date);
+      } else if (this.sortBy === 'amount') {
+        return parseFloat(b.amount) - parseFloat(a.amount);
+      } else if (this.sortBy === 'description') {
+        return a.description.localeCompare(b.description);
       }
-
-      if (valA < valB) return this.sortOrder === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 
     return result;
   }
 
-  getStats() {
+  getDashboardStats() {
     const totalRecords = this.records.length;
-    const totalSum = this.records.reduce((acc, r) => acc + Number(r.amount), 0);
-
-    const categoryTotals = {};
+    const totalSpent = this.records.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+    
+    const categoryMap = {};
     this.records.forEach(r => {
-      categoryTotals[r.category] = (categoryTotals[r.category] || 0) + Number(r.amount);
+      const cat = r.category || 'Uncategorized';
+      categoryMap[cat] = (categoryMap[cat] || 0) + parseFloat(r.amount || 0);
     });
 
     let topCategory = 'N/A';
-    let maxCatVal = 0;
-    for (const [cat, sum] of Object.entries(categoryTotals)) {
-      if (sum > maxCatVal) {
-        maxCatVal = sum;
+    let maxAmount = 0;
+    for (const [cat, amt] of Object.entries(categoryMap)) {
+      if (amt > maxAmount) {
+        maxAmount = amt;
         topCategory = cat;
       }
     }
 
+    const now = new Date();
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setDate(now.getDate() - 7);
+    
     const last7DaysSum = this.records
       .filter(r => new Date(r.date) >= sevenDaysAgo)
-      .reduce((acc, r) => acc + Number(r.amount), 0);
+      .reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
 
-    return { totalRecords, totalSum, topCategory, last7DaysSum };
+    return {
+      totalRecords,
+      totalSpent,
+      topCategory,
+      last7DaysSum
+    };
   }
 }

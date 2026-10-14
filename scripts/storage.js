@@ -1,58 +1,55 @@
 import { validateRecord } from './validators.js';
 
-const STORAGE_KEY = 'student_finance_data_v1';
-const SETTINGS_KEY = 'student_finance_settings_v1';
-
-export function loadRecords() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (err) {
-    return null;
-  }
-}
+const STORAGE_KEY_RECORDS = 'student_finance_records';
+const STORAGE_KEY_SETTINGS = 'student_finance_settings';
 
 export function saveRecords(records) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(records));
 }
 
-export function loadSettings() {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    return raw ? JSON.parse(raw) : {
-      baseCurrency: 'USD',
-      rates: { EUR: 0.92, GBP: 0.79 },
-      monthlyCap: 500
-    };
-  } catch (err) {
-    return { baseCurrency: 'USD', rates: { EUR: 0.92, GBP: 0.79 }, monthlyCap: 500 };
-  }
+export function loadRecords() {
+  const data = localStorage.getItem(STORAGE_KEY_RECORDS);
+  return data ? JSON.parse(data) : [];
 }
 
 export function saveSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+}
+
+export function loadSettings() {
+  const data = localStorage.getItem(STORAGE_KEY_SETTINGS);
+  return data ? JSON.parse(data) : { monthlyCap: 500, currency: 'USD' };
 }
 
 export function validateAndImportJSON(jsonString) {
-  let parsed;
   try {
-    parsed = JSON.parse(jsonString);
-  } catch (err) {
-    throw new Error('Invalid JSON format.');
+    const parsed = JSON.parse(jsonString);
+    const rawRecords = Array.isArray(parsed) ? parsed : parsed.records;
+
+    if (!Array.isArray(rawRecords)) {
+      throw new Error('Imported data must contain an array of records.');
+    }
+
+    const validRecords = [];
+    for (const item of rawRecords) {
+      const { isValid } = validateRecord(item);
+      if (isValid) {
+        validRecords.push({
+          id: item.id || 'rec_' + Date.now() + Math.random(),
+          description: item.description,
+          amount: item.amount,
+          date: item.date,
+          category: item.category,
+          createdAt: item.createdAt || new Date().toISOString()
+        });
+      }
+    }
+
+    return {
+      records: validRecords,
+      settings: parsed.settings || null
+    };
+  } catch (e) {
+    throw new Error('Invalid JSON file format: ' + e.message);
   }
-
-  if (!Array.isArray(parsed)) {
-    throw new Error('Imported data must be an array of records.');
-  }
-
-  const validRecords = parsed.filter(item => {
-    const { isValid } = validateRecord(item);
-    return isValid && item.id && item.createdAt;
-  });
-
-  if (validRecords.length === 0) {
-    throw new Error('No valid records found in JSON file.');
-  }
-
-  return validRecords;
 }
