@@ -36,6 +36,7 @@ function highlightText(text, regex) {
 }
 
 export function renderRecords(state) {
+  const regex = state.searchQuery.trim() ? compileRegex(state.searchQuery) : null;
   const records = state.getFilteredAndSortedRecords(compileRegex);
   const tbody = document.getElementById('records-table-body');
   const cardsContainer = document.getElementById('records-cards');
