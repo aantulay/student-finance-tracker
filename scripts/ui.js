@@ -1,4 +1,4 @@
-import { compileRegex, highlight } from './search.js';
+import { compileRegex} from './search.js';
 
 export function renderDashboard(state) {
   const stats = state.getDashboardStats();
