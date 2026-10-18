@@ -1,76 +1,53 @@
 # Student Finance Tracker
 
-A lightweight, accessible, and fully modular vanilla JavaScript application designed to help students track expenses, manage monthly budgets, configure manual exchange rates, and analyze financial records in real time.
+A responsive, accessible vanilla JavaScript web application designed to help students track expenses, monitor monthly budgets, manage multiple currencies, and perform advanced regex-powered searches.
+
+## Features
+- **Dashboard & Statistics**: Real-time tracking of total records, total expenditure, top spending category, and 7-day spending trends.
+- **Budget Caps & ARIA Alerts**: Set a custom monthly budget cap with dynamic visual status and `aria-live` screen-reader notifications when approaching or exceeding limits.
+- **Multi-Currency Support**: Base currency selector with manual exchange rate configuration relative to USD.
+- **Robust Regex Search & Highlighting**: Real-time search powered by a safe regex compiler (`try/catch`) with live `<mark>` text highlighting.
+- **Data Persistence & Portability**: Automatic saving to browser `localStorage` with JSON export and import capabilities.
+- **Inline Editing & Management**: Add, update, and delete financial records with dynamic timestamp tracking (`updatedAt`).
 
 ---
 
-## Project Requirements & Specifications
+## Regex Catalog
 
-This application is built to fulfill specific academic project criteria for financial trackers, featuring a base currency alongside two secondary currencies, with fully manual exchange rate management directly within the settings panel without external API dependencies.
+The application utilizes regular expressions for form validation and live search filtering:
 
----
-
-## Core Features
-
-* **Modular ES6 Architecture**: The codebase is organized into single-responsibility modules to maintain clean, professional, and accessible code across state management, data persistence, UI rendering, validation, and search operations.
-* **Multi-Currency Support & Manual Rates**: Implements a base currency (USD) and two secondary currencies (EUR and KES), allowing users to define and modify manual exchange rates directly in the settings panel[cite: 1].
-* **Dynamic Monthly Budget Cap**: Set and adjust spending limits in any active display currency. The application handles conversions automatically behind the scenes against the base currency and issues real-time accessibility warnings when limits are exceeded.
-* **Live Regex Search**: Filter financial records instantly using regular expressions with automatic visual text highlighting via semantic HTML elements.
-* **Persistent Local Storage**: Automatically saves transaction records, user preferences, and manual exchange rates to `localStorage` so data remains intact across browser sessions.
-* **Robust JSON Export and Import**: Securely back up your financial records and settings to a JSON file or import external data complete with strict validation checks.
-* **Accessibility (a11y)**: Built with semantic HTML land-marking, ARIA live regions for budget status alerts (`#aria-cap-status`), skip links, and full keyboard navigation support.
-* **Responsive Design**: Adapts smoothly across screen sizes using a dynamic desktop data table and a mobile-friendly card layout.
-* **Automated Unit Testing**: Includes a dedicated unit test runner suite (`tests.html`) verifying regex patterns and validation constraints.
+1. **Cents Present**: `/\.\d{2}\b/`
+   * *Example*: Matches any amount containing exact two-decimal cent formatting (e.g., `12.50`).
+2. **Beverage Keyword Search**: `/(coffee|tea)/i`
+   * *Example*: Case-insensitive match for common beverage purchases in descriptions or categories.
+3. **Date Format Validation**: `/^\d{4}-\d{2}-\d{2}$/`
+   * *Example*: Ensures transaction dates strictly adhere to the `YYYY-MM-DD` standard format.
+4. **Duplicate Words (Advanced)**: `/\b(\w+)\s+\1\b/`
+   * *Example*: Uses back-references to detect accidental duplicate words typed consecutively in descriptions.
 
 ---
 
-## Project Structure
+## Keyboard Map
 
-```text
-student-finance-tracker/
-│
-├── index.html            # Main application dashboard and user interface
-├── tests.html            # Unit test runner for regex and validation assertions
-├── seed.json             # Initial dataset of sample transactions
-│
-├── styles/
-│   └── main.css          # Core styles, responsive layouts, form controls, and settings panel styles
-│
-└── scripts/
-    ├── main.js           # Controller managing event listeners, DOM updates, and initialization
-    ├── state.js          # Business logic, state management, sorting, filtering, and currency conversion
-    ├── storage.js        # Local storage persistence and JSON import validation with schema checks
-    ├── ui.js             # DOM rendering, currency formatting, and accessibility alerts
-    ├── search.js         # Safe regex compilation helper
-    ├── validators.js     # Form and input validation rules
-    └── tests.js          # Assertion logic for the test runner suite
-
+The application is fully navigable using only keyboard controls:
+- **`Tab` / `Shift + Tab`**: Move forward or backward through interactive elements, form fields, and buttons.
+- **`Enter`**: Submit forms, trigger data exports/imports, or activate focused buttons.
+- **`Escape`**: Dismiss active overlays or reset focus states.
+- **`Skip-to-Content Link`**: Pressing `Tab` immediately upon loading reveals the hidden skip link, allowing keyboard users to jump straight past navigation headers to the main content.
 
 ---
 
-## Getting Started
+## Accessibility (A11y) Notes
 
-Follow these steps to set up and run the application locally:
-
-1. **Clone or Download**: Download or clone this repository to your local machine.
-2. **Open the Application**: 
-   * Open `index.html` directly in any modern web browser.
-   * Alternatively, run the project using a local development server such as the Live Server extension in VS Code to ensure smooth ES6 module loading.
-3. **Run Unit Tests**: 
-   * Open `tests.html` in your browser to view automated assertion results verifying the validation rules and regex logic.
+- **Semantic Landmarks**: Uses native HTML5 structural tags (`<header>`, `<nav>`, `<main>`, `<section>`, `<footer>`) to establish clear document hierarchy.
+- **ARIA Live Regions**: Dynamic budget warnings utilize `aria-live="polite"` (or assertive when caps are exceeded) to announce threshold status changes to screen readers.
+- **Focus States**: High-contrast visible focus rings are applied to all interactive controls.
+- **Form Association**: All input fields are explicitly bound to descriptive `<label>` elements.
 
 ---
 
-## Usage Guide
+## How to Run Tests
 
-* **Adding Transactions**: 
-  * Navigate to the Add Transaction form section.
-  * Enter a valid description, monetary amount, date, and category. Click submit to record the entry. Validation errors appear inline if input requirements are not met.
-* **Managing Settings and Currencies**: 
-  * Go to the Settings section to update your monthly budget cap or switch your display currency (USD, EUR, or KES).
-  * Modify the manual exchange rate input fields relative to the base currency to see totals, table entries, and budget warnings scale and update instantly.
-* **Searching Records**: 
-  * Type search terms or regular expression patterns into the live search input bar to filter your transaction list dynamically on the fly.
-* **Data Management**: 
-  * Click **Export JSON** to download a comprehensive backup file containing your current records, settings, and manual exchange rates.
-  * Click **Import JSON** to upload and validate a backup file from your device, ensuring data integrity through built-in schema checks.
+1. Open the project folder in your code editor (e.g., VS Code).
+2. Launch a local development server (such as the **Live Server** extension) or open `tests.html` directly in your browser.
+3. Review the test results list on the page to verify that automated unit test assertions pass successfully.

@@ -9,3 +9,8 @@ export function compileRegex(query) {
     return new RegExp(escaped, 'i');
   }
 }
+
+export function highlight(text, re) {
+  if (!re) return text;
+  return String(text).replace(re, m => `<mark>${m}</mark>`);
+}

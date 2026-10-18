@@ -2,17 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Validation Unit Tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Finance Tracker - Unit Tests</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; }
-    .pass { color: green; font-weight: bold; }
-    .fail { color: red; font-weight: bold; }
+    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; background: #fdfdfd; color: #333; }
+    h1 { color: #111; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 10px 14px; margin-bottom: 8px; border-radius: 6px; font-weight: 500; }
   </style>
 </head>
 <body>
-  <h1>Unit Test Assertions</h1>
-  <div id="test-results"></div>
+  <h1>Unit Tests & Assertions</h1>
+  <ul id="test-results"></ul>
 
-  <script type="module" src="scripts/tests.js"></script>
+  <script type="module">
+    import { compileRegex, highlight } from './scripts/search.js';
+
+    function assert(condition, message) {
+      const list = document.getElementById('test-results');
+      const li = document.createElement('li');
+      li.textContent = `${condition ? '✅ PASS' : '❌ FAIL'}: ${message}`;
+      li.style.color = condition ? '#155724' : '#721c24';
+      li.style.backgroundColor = condition ? '#d4edda' : '#f8d5d8';
+      list.appendChild(li);
+    }
+
+    // Run Assertions
+    const re = compileRegex('Books');
+    assert(re instanceof RegExp, 'compileRegex returns a valid RegExp object');
+    
+    const highlighted = highlight('Buying Books', re);
+    assert(highlighted.includes('<mark>Books</mark>'), 'highlight function correctly wraps matches in <mark>');
+  </script>
 </body>
 </html>
