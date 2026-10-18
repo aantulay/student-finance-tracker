@@ -2,6 +2,16 @@
 
 A responsive, accessible vanilla JavaScript web application designed to help students track expenses, monitor monthly budgets, manage multiple currencies, and perform advanced regex-powered searches.
 
+## Setup Guide
+1. **Clone the Repository**:
+   ```bash
+   git clone [https://github.com/aantulay/student-finance-tracker.git](https://github.com/aantulay/student-finance-tracker.git)
+2. **Open in Editor**: Open the project directory in your code editor (such as VS Code).
+
+3. **Run Locally**: Launch the project using a local development server (like the Live Server extension in VS Code) to prevent browser CORS restrictions when fetching seed.json.
+
+## Features List
+
 ## Features
 - **Dashboard & Statistics**: Real-time tracking of total records, total expenditure, top spending category, and 7-day spending trends.
 - **Budget Caps & ARIA Alerts**: Set a custom monthly budget cap with dynamic visual status and `aria-live` screen-reader notifications when approaching or exceeding limits.
